@@ -15,7 +15,12 @@ const options = {
         description: 'Servidor de Desenvolvimento',
       },
     ],
-    tags: [],
+    tags: [
+      {
+        name: 'Weather', 
+        description: 'Endpoints para consulta e histórico climático',
+      },
+    ],
     components: {
       responses: {
         ErrorServer: {
@@ -30,7 +35,7 @@ const options = {
       }
     },
   },
-  apis: ["./src/docs/**/*.yaml"],
+  apis: ["./src/docs/*.yaml"],
 };
 
 const specs = swaggerJsdoc(options);

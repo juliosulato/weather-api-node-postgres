@@ -1,0 +1,112 @@
+paths:
+  /weather:
+    post:
+      summary: Busca dados climáticos atuais e salva histórico
+      description: |
+        Busca dados na OpenWeatherAPI (ou cache) baseado na cidade informada e salva um log no banco de dados.
+        Se já houver um registro recente (10 min), retorna do banco.
+      tags:
+        - Weather
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateWeatherInput'
+      responses:
+        201:
+          description: Registro criado ou recuperado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WeatherLog'
+        400:
+          description: Erro de validação (Campos obrigatórios faltando)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Cidade não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Erro interno do servidor ou falha na API externa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      summary: Lista todo o histórico de consultas
+      description: Retorna todos os logs climáticos salvos no banco de dados.
+      tags:
+        - Weather
+      responses:
+        200:
+          description: Lista de logs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WeatherLog'
+        500:
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    CreateWeatherInput:
+      type: object
+      required:
+        - city
+      properties:
+        city:
+          type: string
+          example: "Curitiba"
+          description: Nome da cidade
+        state:
+          type: string
+          example: "PR"
+          description: Código do estado (2 letras)
+        countryByISO:
+          type: string
+          example: "BR"
+          description: Código ISO do país (2 letras)
+
+    WeatherLog:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        city:
+          type: string
+        temperature:
+          type: number
+        humidity:
+          type: number
+        windSpeed:
+          type: number
+        description:
+          type: string
+        fetchedAt:
+          type: string
+          format: date-time
+
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "error"
+        statusCode:
+          type: integer
+        message:
+          type: string

@@ -53,6 +53,7 @@ export class WeatherService {
 
     const url = `${env.OPENWEATHER_BASE_URL}/geo/1.0/direct?q=${query}&limit=1&appid=${env.OPENWEATHER_API_KEY}`;
 
+    console.log(env.OPENWEATHER_BASE_URL)
     const response = await fetch(url);
     if (!response.ok) {
       const errorData = await response.json();

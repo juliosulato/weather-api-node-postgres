@@ -76,8 +76,8 @@ Antes de rodar o projeto quando estiver pronto, será necessário:
     - /validations
     - /prisma
     - /docs
-- app.ts
-- server.ts
+    - app.ts
+    - server.ts
 - /prisma
 - Dockerfile
 - docker-compose.yml

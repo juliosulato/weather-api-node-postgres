@@ -51,8 +51,8 @@ O progresso atual do projeto inclui (em desenvolvimento):
 - [X] Endpoint para consultar histórico de climas  
 - [X] Validação de entrada com Zod  
 - [X] Documentação da API com Swagger  
-- [ ] Containerização com Docker / Docker Compose  
-- [ ] Pipeline CI/CD básica
+- [X] Containerização com Docker / Docker Compose  
+- [X] Pipeline CI/CD básica
 
 ---
 
@@ -73,7 +73,7 @@ Antes de rodar o projeto quando estiver pronto, será necessário:
     - /controllers
     - /services
     - /routes
-    - /validations
+    - /schemas
     - /prisma
     - /docs
     - app.ts

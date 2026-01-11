@@ -42,9 +42,9 @@ As principais etapas de desenvolvimento estão sendo implementadas de forma incr
 
 O progresso atual do projeto inclui (em desenvolvimento):
 
-- [ ] Configuração inicial do projeto com TypeScript  
-- [ ] Estrutura de diretorias e arquivos base  
-- [ ] Configuração de variáveis de ambiente  
+- [X] Configuração inicial do projeto com TypeScript  
+- [X] Estrutura de diretorias e arquivos base  
+- [X] Configuração de variáveis de ambiente  
 - [ ] Serviço de integração com OpenWeather API  
 - [ ] Endpoint para consultar clima por cidade  
 - [ ] Persistência de dados no PostgreSQL com Prisma  

@@ -1,0 +1,23 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model WeatherLog {
+  id          String   @id @default(uuid())
+  city        String
+  temperature Float   
+  humidity    Int
+  windSpeed   Float
+  description String?
+  
+  rawResponse Json?    
+
+  fetchedAt   DateTime @default(now())
+
+  @@map("weather_logs") 
+}

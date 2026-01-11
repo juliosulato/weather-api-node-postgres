@@ -10,7 +10,14 @@
     "lint": "eslint . --ext .ts",
     "format": "prettier --write .",
     "audit": "npm audit --audit-level=moderate",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "docker:build": "docker-compose up -d --build",
+    "docker:dev": "docker-compose -f docker-compose.dev.yml up -d",
+    "docker:migrate": "docker-compose exec app npx prisma migrate deploy",
+    "docker:studio": "docker-compose exec app npx prisma studio"
   },
   "repository": {
     "type": "git",
@@ -24,8 +31,11 @@
   },
   "homepage": "https://github.com/juliosulato/weather-api-node-postgres#readme",
   "devDependencies": {
+    "@eslint/js": "^9.39.2",
     "@types/node": "^25.0.6",
     "@types/pg": "^8.16.0",
+    "@typescript-eslint/eslint-plugin": "^8.52.0",
+    "@typescript-eslint/parser": "^8.52.0",
     "eslint": "^9.39.2",
     "prisma": "^7.2.0",
     "ts-node-dev": "^2.0.0",

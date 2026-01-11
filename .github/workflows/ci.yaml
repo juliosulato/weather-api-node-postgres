@@ -53,7 +53,7 @@ jobs:
 
       - name: Create .env file for CI
         run: |
-          echo "OPENWEATHER_API_KEY=test_key_for_ci" > .env
+          echo "OPENWEATHER_API_KEY=${{ secrets.OPENWEATHER_API_KEY }}" > .env
           echo "NODE_ENV=production" >> .env
 
       - name: Build and start services

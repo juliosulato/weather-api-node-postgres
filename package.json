@@ -11,13 +11,13 @@
     "format": "prettier --write .",
     "audit": "npm audit --audit-level=moderate",
     "postinstall": "prisma generate",
-    "docker:up": "docker-compose up -d",
-    "docker:down": "docker-compose down",
-    "docker:logs": "docker-compose logs -f",
-    "docker:build": "docker-compose up -d --build",
-    "docker:dev": "docker-compose -f docker-compose.dev.yml up -d",
-    "docker:migrate": "docker-compose exec app npx prisma migrate deploy",
-    "docker:studio": "docker-compose exec app npx prisma studio"
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f",
+    "docker:build": "docker compose up -d --build",
+    "docker:dev": "docker compose -f docker-compose.dev.yml up -d",
+    "docker:migrate": "docker compose exec app npx prisma migrate deploy",
+    "docker:studio": "docker compose exec app npx prisma studio"
   },
   "repository": {
     "type": "git",

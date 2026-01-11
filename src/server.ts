@@ -1,11 +1,7 @@
-import dotenv from "dotenv";
-dotenv.config();
-
 import app from "./app";
+import { env } from "./config/env";
 
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
-  console.log(`Swagger Docs disponível em http://localhost:${PORT}/api/v1/docs`);
+app.listen(env.PORT, () => {
+  console.log(`Servidor rodando na porta ${env.PORT}`);
+  console.log(`Swagger Docs disponível em http://localhost:${env.PORT}${env.API_PREFIX}/docs`);
 });

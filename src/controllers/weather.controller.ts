@@ -14,7 +14,6 @@ export class WeatherController {
       return res.status(201).json(result);
     } catch (error) {
       if (error instanceof ZodError) {
-        // No Zod v4, use 'issues' ao invés de 'errors'
         const messages = error.issues.map(
           err => `${err.path.join('.')}: ${err.message}`
         );

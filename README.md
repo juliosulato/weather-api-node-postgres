@@ -45,14 +45,14 @@ O progresso atual do projeto inclui (em desenvolvimento):
 - [X] Configuração inicial do projeto com TypeScript  
 - [X] Estrutura de diretorias e arquivos base  
 - [X] Configuração de variáveis de ambiente  
-- [ ] Serviço de integração com OpenWeather API  
-- [ ] Endpoint para consultar clima por cidade  
-- [ ] Persistência de dados no PostgreSQL com Prisma  
-- [ ] Endpoint para consultar histórico de climas  
-- [ ] Validação de entrada com Zod  
-- [ ] Documentação da API com Swagger  
+- [X] Serviço de integração com OpenWeather API  
+- [X] Endpoint para consultar clima por cidade  
+- [X] Persistência de dados no PostgreSQL com Prisma  
+- [X] Endpoint para consultar histórico de climas  
+- [X] Validação de entrada com Zod  
+- [X] Documentação da API com Swagger  
 - [ ] Containerização com Docker / Docker Compose  
-- [ ] (Opcional) Pipeline CI/CD básica
+- [ ] Pipeline CI/CD básica
 
 ---
 

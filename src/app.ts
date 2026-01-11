@@ -4,6 +4,7 @@ import rateLimit from 'express-rate-limit';
 import { HttpException } from './utils/http-exception';
 import specs from './config/swagger';
 import { env } from './config/env';
+import { weatherRoutes } from './routes/weather.routes';
 
 const app = express();
 
@@ -33,6 +34,8 @@ app.use(`${env.API_PREFIX}/docs`, swaggerUi.serve, swaggerUi.setup(specs, {
     docExpansion: "none",
   }
 }));
+
+app.use(`${env.API_PREFIX}/weather`, weatherRoutes)
 
 app.use((err: HttpException, _req: Request, res: Response, _next: NextFunction) => {
   console.error(err.stack);

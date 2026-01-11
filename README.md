@@ -88,6 +88,16 @@ Antes de rodar o projeto quando estiver pronto, será necessário:
 
 ---
 
+### Scripts úteis
+
+- `npm run dev` — ambiente de desenvolvimento
+- `npm run build` — build de produção
+- `npm run start` — executar build
+- `npm run lint` — análise estática
+- `npm run audit` — verificação básica de segurança (opcional)
+
+---
+
 ## 🧪 Desenvolvimento
 
 Este repositório segue um plano de desenvolvimento com commits incrementais.

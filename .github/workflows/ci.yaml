@@ -1,4 +1,5 @@
-name: CI/CD Pipeline
+pipeline:
+  name: CI/CD Pipeline
 
 on:
   push:
@@ -56,20 +57,17 @@ jobs:
           echo "OPENWEATHER_API_KEY=${{ secrets.OPENWEATHER_API_KEY }}" > .env
           echo "NODE_ENV=production" >> .env
 
-      # CORREÇÃO 1: docker compose up
       - name: Build and start services
         run: docker compose up -d --build
 
-      # CORREÇÃO 2: docker compose exec
       - name: Wait for services to be healthy
         run: |
           echo "Waiting for database..."
           timeout 60 bash -c 'until docker compose exec -T db pg_isready -U user -d weather_db; do sleep 2; done'
-          
+
           echo "Waiting for app..."
           timeout 60 bash -c 'until curl -f http://localhost:3000/api/v1/health; do sleep 2; done'
 
-      # CORREÇÃO 3: docker compose exec
       - name: Run database migrations
         run: docker compose exec -T app npx prisma migrate deploy
 
@@ -88,7 +86,7 @@ jobs:
             -H "Content-Type: application/json" \
             -d '{"city": "London", "countryByISO": "GB"}' \
             -w "%{http_code}" -o /tmp/response.json)
-          
+
           if [ $response -ne 201 ]; then
             echo "Weather API test failed with status $response"
             cat /tmp/response.json
@@ -105,7 +103,6 @@ jobs:
           fi
           echo "List weather logs passed!"
 
-      # CORREÇÃO 4: docker compose logs
       - name: Show logs on failure
         if: failure()
         run: |
@@ -114,81 +111,9 @@ jobs:
           echo "=== DB Logs ==="
           docker compose logs db
 
-      # CORREÇÃO 5: docker compose down
       - name: Cleanup
         if: always()
         run: docker compose down -v
-        
-    name: Docker Build & Integration Test
-    needs: ci-quick
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Create .env file for CI
-        run: |
-          echo "OPENWEATHER_API_KEY=${{ secrets.OPENWEATHER_API_KEY }}" > .env
-          echo "NODE_ENV=production" >> .env
-
-      - name: Build and start services
-        run: docker-compose up -d --build
-
-      - name: Wait for services to be healthy
-        run: |
-          echo "Waiting for database..."
-          timeout 60 bash -c 'until docker-compose exec -T db pg_isready -U user -d weather_db; do sleep 2; done'
-          
-          echo "Waiting for app..."
-          timeout 60 bash -c 'until curl -f http://localhost:3000/api/v1/health; do sleep 2; done'
-
-      - name: Run database migrations
-        run: docker-compose exec -T app npx prisma migrate deploy
-
-      - name: Test health endpoint
-        run: |
-          response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/api/v1/health)
-          if [ $response -ne 200 ]; then
-            echo "Health check failed with status $response"
-            exit 1
-          fi
-          echo "Health check passed!"
-
-      - name: Test weather API endpoint
-        run: |
-          response=$(curl -s -X POST http://localhost:3000/api/v1/weather \
-            -H "Content-Type: application/json" \
-            -d '{"city": "London", "countryByISO": "GB"}' \
-            -w "%{http_code}" -o /tmp/response.json)
-          
-          if [ $response -ne 201 ]; then
-            echo "Weather API test failed with status $response"
-            cat /tmp/response.json
-            exit 1
-          fi
-          echo "Weather API test passed!"
-
-      - name: Test list weather logs
-        run: |
-          response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/api/v1/weather)
-          if [ $response -ne 200 ]; then
-            echo "List weather logs failed with status $response"
-            exit 1
-          fi
-          echo "List weather logs passed!"
-
-      - name: Show logs on failure
-        if: failure()
-        run: |
-          echo "=== App Logs ==="
-          docker-compose logs app
-          echo "=== DB Logs ==="
-          docker-compose logs db
-
-      - name: Cleanup
-        if: always()
-        run: docker-compose down -v
 
   docker-build-only:
     name: Docker Build (No Integration)

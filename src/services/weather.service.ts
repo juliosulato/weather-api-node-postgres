@@ -2,9 +2,10 @@ import { env } from "@/config/env";
 import { prisma } from "@/config/prisma";
 import { CreateWeatherInput } from "@/schemas/weather.schema";
 import { GeoLocation } from "@/types/geoLocation.types";
+import { WeatherResponse } from "@/types/WeatherResponse.types";
 import { HttpException } from "@/utils/http-exception";
 
-const weatherCache = new Map<string, { data: any; timestamp: number }>();
+const weatherCache = new Map<string, { data: WeatherResponse; timestamp: number }>();
 const CACHE_DURATION = 5 * 60 * 1000; 
 
 export class WeatherService {

@@ -22,7 +22,10 @@ RUN apk add --no-cache dumb-init openssl
 ENV NODE_ENV=production
 
 COPY package*.json ./
+COPY prisma.config.ts ./
 COPY prisma ./prisma/
+
+ENV DATABASE_URL="postgresql://build:build@localhost:5432/build"
 
 RUN npm ci --only=production && \
     npm cache clean --force

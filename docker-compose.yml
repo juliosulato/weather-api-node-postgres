@@ -14,7 +14,8 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user || exit 1"]
+      # CORREÇÃO: Adicionado "-d weather_db" para conectar no banco certo
+      test: ["CMD-SHELL", "pg_isready -U user -d weather_db || exit 1"]
       interval: 5s
       timeout: 5s
       retries: 10

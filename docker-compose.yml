@@ -14,7 +14,6 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      # CORREÇÃO: Adicionado "-d weather_db" para conectar no banco certo
       test: ["CMD-SHELL", "pg_isready -U user -d weather_db || exit 1"]
       interval: 5s
       timeout: 5s
@@ -32,16 +31,13 @@ services:
     ports:
       - "3000:3000"
     
-    # MUDANÇA: Usar env_file garante que o arquivo .env criado no CI seja injetado
     env_file:
       - .env
       
     environment:
       NODE_ENV: production
       PORT: 3000
-      # Mantemos o DATABASE_URL aqui para garantir a sobreescrita caso necessário
       DATABASE_URL: ${DATABASE_URL:-postgresql://user:password@db:5432/weather_db}
-      # As outras variáveis virão do arquivo .env carregado acima
       
     depends_on:
       db:

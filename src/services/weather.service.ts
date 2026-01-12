@@ -2,15 +2,26 @@ import { env } from "@/config/env";
 import { prisma } from "@/config/prisma";
 import { CreateWeatherInput } from "@/schemas/weather.schema";
 import { GeoLocation } from "@/types/geoLocation.types";
-import { WeatherResponse } from "@/types/WeatherResponse.types";
+import { CachedWeather } from "@/types/WeatherResponse.types";
 import { HttpException } from "@/utils/http-exception";
+import { WeatherLog } from "@/generated/prisma/client";
 
-const weatherCache = new Map<string, { data: WeatherResponse; timestamp: number }>();
-const CACHE_DURATION = 5 * 60 * 1000; 
+const weatherCache = new Map<
+  string,
+  { data: CachedWeather; timestamp: number }
+>();
+const CACHE_DURATION = 5 * 60 * 1000;
 
 export class WeatherService {
   async create(data: CreateWeatherInput) {
     const { lat, lon, name } = await this.getCoordinates(data);
+    const cacheKey = `${lat},${lon}`;
+
+    const cached = weatherCache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+      console.log("Retornando dados do cache em memória");
+      return cached.data;
+    }
 
     const recentLog = await prisma.weatherLog.findFirst({
       where: {
@@ -22,8 +33,12 @@ export class WeatherService {
     });
 
     if (recentLog) {
-      console.log("Retornando dados do cache...")
-      return recentLog;
+      console.log("Retornando dados do banco e populando cache em memória");
+
+      const normalized: CachedWeather = this.normalizeData(recentLog);
+
+      weatherCache.set(cacheKey, { data: normalized, timestamp: Date.now() });
+      return normalized;
     }
 
     const weatherData = await this.getWeatherData(lat, lon);
@@ -43,7 +58,29 @@ export class WeatherService {
   async listAll() {
     return await prisma.weatherLog.findMany();
   }
-  
+
+  constructor() {
+    setInterval(() => this.cleanCache(), 60 * 1000);
+  }
+
+  private cleanCache() {
+    const now = Date.now();
+    for (const [key, value] of weatherCache) {
+      if (now - value.timestamp > CACHE_DURATION) {
+        weatherCache.delete(key);
+        console.log(`Cache expirado removido: ${key}`);
+      }
+    }
+  }
+
+  private normalizeData(dbLog: WeatherLog): CachedWeather {
+    return {
+      main: { temp: dbLog.temperature, humidity: dbLog.humidity },
+      wind: { speed: dbLog.windSpeed },
+      weather: [{ description: dbLog.description ?? "" }],
+      rawResponse: dbLog.rawResponse as unknown,
+    };
+  }
 
   private async getCoordinates(data: CreateWeatherInput): Promise<GeoLocation> {
     const queryParts = [data.city];
@@ -54,7 +91,7 @@ export class WeatherService {
 
     const url = `${env.OPENWEATHER_BASE_URL}/geo/1.0/direct?q=${query}&limit=1&appid=${env.OPENWEATHER_API_KEY}`;
 
-    console.log(env.OPENWEATHER_BASE_URL)
+    console.log(env.OPENWEATHER_BASE_URL);
     const response = await fetch(url);
     if (!response.ok) {
       const errorData = await response.json();
@@ -86,7 +123,7 @@ export class WeatherService {
     const url = `${env.OPENWEATHER_BASE_URL}/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&lang=pt_br&appid=${env.OPENWEATHER_API_KEY}`;
 
     const response = await fetch(url);
-    console.log(response.status)
+    console.log(response.status);
     if (!response.ok)
       throw new HttpException(500, "Erro ao consultar serviço de clima");
 

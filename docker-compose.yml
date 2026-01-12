@@ -30,14 +30,18 @@ services:
     restart: unless-stopped
     ports:
       - "3000:3000"
+    
+    # MUDANÇA: Usar env_file garante que o arquivo .env criado no CI seja injetado
+    env_file:
+      - .env
+      
     environment:
       NODE_ENV: production
       PORT: 3000
+      # Mantemos o DATABASE_URL aqui para garantir a sobreescrita caso necessário
       DATABASE_URL: ${DATABASE_URL:-postgresql://user:password@db:5432/weather_db}
-      OPENWEATHER_API_KEY: ${OPENWEATHER_API_KEY}
-      OPENWEATHER_BASE_URL: https://api.openweathermap.org
-      API_PREFIX: /api/v1
-      SERVICE_NAME: weather-api
+      # As outras variáveis virão do arquivo .env carregado acima
+      
     depends_on:
       db:
         condition: service_healthy

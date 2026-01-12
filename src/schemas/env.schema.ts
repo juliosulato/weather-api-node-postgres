@@ -9,7 +9,7 @@ export const envSchema = z.object({
   OPENWEATHER_API_KEY: z.string().min(1, 'OPENWEATHER_API_KEY is required'),
   OPENWEATHER_BASE_URL: z
     .url()
-    .default('https://api.openweathermap.org/data/2.5'),
+    .default('https://api.openweathermap.org'),
 
   DATABASE_URL: z.url('DATABASE_URL must be a valid URL'),
 });

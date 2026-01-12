@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   db:
@@ -18,7 +18,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
-      start_period: 30s
+      start_period: 10s
     networks:
       - weather_network
 
@@ -33,7 +33,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      DATABASE_URL: postgresql://user:password@db:5432/weather_db
+      DATABASE_URL: ${DATABASE_URL:-postgresql://user:password@db:5432/weather_db}
       OPENWEATHER_API_KEY: ${OPENWEATHER_API_KEY}
       OPENWEATHER_BASE_URL: https://api.openweathermap.org
       API_PREFIX: /api/v1
@@ -43,14 +43,6 @@ services:
         condition: service_healthy
     networks:
       - weather_network
-    entrypoint: ["/bin/sh", "-c"]
-    command:
-      - |
-        echo '🔄 Running database migrations...'
-        npx prisma migrate deploy
-        echo '✅ Migrations complete!'
-        echo '🚀 Starting application...'
-        exec node dist/server.js
 
   adminer:
     image: adminer:latest

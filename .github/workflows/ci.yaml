@@ -55,20 +55,30 @@ jobs:
         run: |
           echo "OPENWEATHER_API_KEY=${{ secrets.OPENWEATHER_API_KEY }}" > .env
           echo "NODE_ENV=production" >> .env
+          echo "DATABASE_URL=postgresql://user:password@db:5432/weather_db" >> .env
 
       - name: Build and start services
         run: docker compose up -d --build
 
-      - name: Wait for services to be healthy
+      - name: Wait for Database to be ready
         run: |
           echo "Waiting for database..."
-          timeout 120 bash -c 'until docker compose exec -T db pg_isready -U user -d weather_db; do sleep 2; done'
-
-          echo "Waiting for app..."
-          timeout 180 bash -c 'until curl -f http://localhost:3000/api/v1/health; do sleep 2; done'
+          timeout 60 bash -c 'until docker compose exec -T db pg_isready -U user -d weather_db; do sleep 2; done'
 
       - name: Run database migrations
         run: docker compose exec -T app npx prisma migrate deploy
+
+      - name: Wait for App to be ready
+        run: |
+          echo "Waiting for app..."
+          # Aumentei para 120s e adicionei logs se falhar
+          if ! timeout 120 bash -c 'until curl -s -f http://localhost:3000/api/v1/health; do sleep 5; done'; then
+            echo "❌ TIMED OUT: O App não respondeu."
+            echo "=== LOGS DO APP ==="
+            docker compose logs --tail=100 app
+            exit 1
+          fi
+          echo "✅ App is healthy!"
 
       - name: Test health endpoint
         run: |
@@ -85,7 +95,7 @@ jobs:
             -H "Content-Type: application/json" \
             -d '{"city": "London", "countryByISO": "GB"}' \
             -w "%{http_code}" -o /tmp/response.json)
-
+          
           if [ $response -ne 201 ]; then
             echo "Weather API test failed with status $response"
             cat /tmp/response.json
